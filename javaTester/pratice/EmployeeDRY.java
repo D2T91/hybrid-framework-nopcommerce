@@ -31,7 +31,6 @@ public class EmployeeDRY {
         EmployeeDRY Kenny = new EmployeeDRY("Kenny","Developer",
                 "Fulltime", "3000","");
         Kenny.showEmployInfo();
-
     }
 
 }

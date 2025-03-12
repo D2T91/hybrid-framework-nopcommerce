@@ -2,13 +2,13 @@ package pratice;
 
 public class EmployeeRY {
 
-    public void showFulltimeEmploy() {
+    public void showFulltimeKennyG() {
         System.out.println("Name = Kenny G");
         System.out.println("Position = Developer");
         System.out.println("Type = Fulltime");
         System.out.println("Salary = 2000");
     }
-    public void showParttimeEmploy() {
+    public void showParttimeVintG() {
         System.out.println("Name = VintG");
         System.out.println("Position = QA");
         System.out.println("Type = Parttime");
@@ -17,10 +17,10 @@ public class EmployeeRY {
 
     public static void main(String[] args) {
         EmployeeRY firtsEmploy = new EmployeeRY();
-        firtsEmploy.showFulltimeEmploy();
+        firtsEmploy.showFulltimeKennyG();
 
         EmployeeRY secondEmploy = new EmployeeRY();
-        secondEmploy.showParttimeEmploy();
+        secondEmploy.showParttimeVintG();
     }
 
 }
