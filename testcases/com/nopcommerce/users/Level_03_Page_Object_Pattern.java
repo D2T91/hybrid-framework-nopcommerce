@@ -102,8 +102,4 @@ public class Level_03_Page_Object_Pattern extends BaseTest {
         driver.quit();
     }
 
-    public int generateFakeNumber() {
-        Random rand = new Random();
-        return rand.nextInt(9999);
-    }
 }
