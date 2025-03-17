@@ -6,7 +6,7 @@
     <test name="Run on FIREFOX browser" >
         <parameter name="browser" value="FIREFOX"></parameter>
         <classes>
-            <class name="com.nopcommerce.users.Level_05_Page_Generator_3" />
+            <class name="com.nopcommerce.users.Level_6_Switch_Page" />
         </classes>
     </test>
 

@@ -6,6 +6,9 @@ import org.openqa.selenium.support.Color;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import pageObjects.nopCommerce.*;
+import pageUIs.nopCommerce.*;
+
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
@@ -321,5 +324,31 @@ public class BasePage {
 
     public boolean waitForElementSelected(WebDriver driver, String locator) {
         return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.elementToBeSelected(getByXpath(locator)));
+    }
+
+    // Open page tại My Account Page
+
+    public AddressPageObject openAddressPage(WebDriver driver) {
+        waitForElementClickable(driver, BasePageUI.ADDRESS_LINK);
+        clickToElement(driver, BasePageUI.ADDRESS_LINK);
+        return PageGenerator.getPageInstance(AddressPageObject.class, driver);
+    }
+
+    public RewardPointPageObject openRewardPointPage(WebDriver driver) {
+        waitForElementClickable(driver, BasePageUI.REWARD_POINT_LINK);
+        clickToElement(driver, BasePageUI.REWARD_POINT_LINK);
+        return PageGenerator.getPageInstance(RewardPointPageObject.class, driver);
+    }
+
+    public OrderPageObject openOrderPage(WebDriver driver) {
+        waitForElementClickable(driver, BasePageUI.ORDER_LINK);
+        clickToElement(driver, BasePageUI.ORDER_LINK);
+        return PageGenerator.getPageInstance(OrderPageObject.class, driver);
+    }
+
+    public CustomerInforPageObject openCustomerPage(WebDriver driver) {
+        waitForElementClickable(driver, BasePageUI.CUSTOMER_INFO_LINK);
+        clickToElement(driver, BasePageUI.CUSTOMER_INFO_LINK);
+        return PageGenerator.getPageInstance(CustomerInforPageObject.class, driver);
     }
 }
