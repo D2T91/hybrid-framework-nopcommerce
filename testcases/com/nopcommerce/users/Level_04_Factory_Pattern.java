@@ -8,17 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import pageObjects.nopCommerce.CustomerInforPageObject;
-import pageObjects.nopCommerce.HomePageObject;
-import pageObjects.nopCommerce.LoginPageObject;
-import pageObjects.nopCommerce.RegisterPageObject;
+import pageObjects.nopCommerce.*;
 
 import java.util.concurrent.TimeUnit;
 
-public class Level_03_Page_Object_Pattern extends BaseTest {
-    private static final Logger log = LoggerFactory.getLogger(Level_03_Page_Object_Pattern.class);
-    String projectPath = System.getProperty("user.dir");
+public class Level_04_Factory_Pattern extends BaseTest {
 
     WebDriver driver;
     String firstName, emailAddress, lastName, companyName, password;
@@ -27,9 +23,14 @@ public class Level_03_Page_Object_Pattern extends BaseTest {
     RegisterPageObject registerPage;
     CustomerInforPageObject customerPage;
 
+    @Parameters({"url", "browser"})
     @BeforeClass
-    public void beforeClass() {
-        driver = new FirefoxDriver();
+    public void beforeClass(String urlValue, String browserName) {
+
+        driver = getBrowserDriver(urlValue, browserName);
+
+        // Áp dụng Factory Pattern để quản lý việc khởi tạo Page Object
+        homePage = (HomePageObject) PageManager.getPage(driver, "HomePage");
 
         firstName = "Morten";
         lastName = "Murkit";
@@ -37,18 +38,13 @@ public class Level_03_Page_Object_Pattern extends BaseTest {
         password = "Tung8545059@";
         emailAddress = "afc" + generateFakeNumber() + "@kype.com";
 
-        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-        driver.get("https://demo.nopcommerce.com/");
-
-        homePage = new HomePageObject(driver);
-
     }
 
     @Test
     public void TC_01_Register() {
         homePage.clickToRegisterLink();
  
-        registerPage = new RegisterPageObject(driver);
+        registerPage = (RegisterPageObject) PageManager.getPage(driver, "RegisterPage");
 
         registerPage.enterToFirstNameTextbox(firstName);
         registerPage.enterToLastNameTextbox(lastName);
@@ -62,7 +58,7 @@ public class Level_03_Page_Object_Pattern extends BaseTest {
 
         registerPage.clickToLogoutLink();
         // Về lại trang HOME
-        homePage = new HomePageObject(driver);
+        homePage = (HomePageObject) PageManager.getPage(driver, "HomePage");
         // Điểm kết thúc của testcase trên là bắt đầu của testcase dưới
     }
 
@@ -71,14 +67,14 @@ public class Level_03_Page_Object_Pattern extends BaseTest {
         homePage.clickToLoginLink();
 
         // Từ Home qua Login
-        loginPage = new LoginPageObject(driver);
+        loginPage = (LoginPageObject) PageManager.getPage(driver, "LoginPage");
 
         loginPage.enterToEmailTextbox(emailAddress);
         loginPage.enterToPasswordTextbox(password);
 
         loginPage.clickToLoginButton();
 
-        homePage = new HomePageObject(driver);
+        homePage = (HomePageObject) PageManager.getPage(driver, "HomePage");
 
     }
 
@@ -86,7 +82,7 @@ public class Level_03_Page_Object_Pattern extends BaseTest {
     public void TC_03_MyAccount() {
         homePage.clickToMyAccountLink();
 
-        customerPage = new CustomerInforPageObject(driver);
+        customerPage = (CustomerInforPageObject) PageManager.getPage(driver, "CustomerInfor");
 
         Assert.assertEquals(customerPage.getFirstNameTextboxValue(),firstName);
         Assert.assertEquals(customerPage.getLastNameTextboxValue(),lastName);

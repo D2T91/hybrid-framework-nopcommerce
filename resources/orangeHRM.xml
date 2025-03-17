@@ -13,7 +13,7 @@
     </test>
 
     <test name="Run on Firefox browser" >
-        <parameter name="browser" value="firefox"></parameter>
+        <parameter name="browser" value="fireFox"></parameter>
         <classes>
             <class name="com.orangehrm.employee.Level_04_Multiple_Browser" />
         </classes>

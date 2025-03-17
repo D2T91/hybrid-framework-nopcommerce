@@ -1,0 +1,13 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="NopCommerce UI Automation" verbose="1" >
+    <parameter name="url" value="https://demo.nopcommerce.com/"></parameter>
+
+    <test name="Run on FIREFOX browser" >
+        <parameter name="browser" value="FIREFOX"></parameter>
+        <classes>
+            <class name="com.nopcommerce.users.Level_05_Page_Generator_3" />
+        </classes>
+    </test>
+
+</suite>

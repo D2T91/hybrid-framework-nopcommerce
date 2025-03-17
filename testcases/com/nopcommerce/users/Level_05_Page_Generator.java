@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import pageObjects.nopCommerce.CustomerInforPageObject;
 import pageObjects.nopCommerce.HomePageObject;
@@ -16,9 +17,7 @@ import pageObjects.nopCommerce.RegisterPageObject;
 
 import java.util.concurrent.TimeUnit;
 
-public class Level_03_Page_Object_Pattern extends BaseTest {
-    private static final Logger log = LoggerFactory.getLogger(Level_03_Page_Object_Pattern.class);
-    String projectPath = System.getProperty("user.dir");
+public class Level_05_Page_Generator extends BaseTest {
 
     WebDriver driver;
     String firstName, emailAddress, lastName, companyName, password;
@@ -27,9 +26,11 @@ public class Level_03_Page_Object_Pattern extends BaseTest {
     RegisterPageObject registerPage;
     CustomerInforPageObject customerPage;
 
+    @Parameters({"url", "browser"})
     @BeforeClass
-    public void beforeClass() {
-        driver = new FirefoxDriver();
+    public void beforeClass(String urlValue, String browserName) {
+
+        driver = getBrowserDriver(urlValue, browserName);
 
         firstName = "Morten";
         lastName = "Murkit";
@@ -37,8 +38,6 @@ public class Level_03_Page_Object_Pattern extends BaseTest {
         password = "Tung8545059@";
         emailAddress = "afc" + generateFakeNumber() + "@kype.com";
 
-        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-        driver.get("https://demo.nopcommerce.com/");
 
         homePage = new HomePageObject(driver);
 
