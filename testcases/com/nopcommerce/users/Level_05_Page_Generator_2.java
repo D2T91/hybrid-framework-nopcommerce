@@ -7,18 +7,18 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import pageObjects.nopCommerce.CustomerInforPageObject;
-import pageObjects.nopCommerce.HomePageObject;
-import pageObjects.nopCommerce.LoginPageObject;
-import pageObjects.nopCommerce.RegisterPageObject;
+import pageObjects.nopCommerce.sideBar.CustomerInforPageObject;
+import pageObjects.nopCommerce.UserHomePageObject;
+import pageObjects.nopCommerce.UserLoginPageObject;
+import pageObjects.nopCommerce.UserRegisterPageObject;
 
 public class Level_05_Page_Generator_2 extends BaseTest {
 
     WebDriver driver;
     String firstName, emailAddress, lastName, companyName, password;
-    HomePageObject homePage;
-    LoginPageObject loginPage;
-    RegisterPageObject registerPage;
+    UserHomePageObject homePage;
+    UserLoginPageObject loginPage;
+    UserRegisterPageObject registerPage;
     CustomerInforPageObject customerPage;
 
     @Parameters({"url", "browser"})
@@ -34,7 +34,7 @@ public class Level_05_Page_Generator_2 extends BaseTest {
         emailAddress = "afc" + generateFakeNumber() + "@kype.com";
         
 
-        homePage = new HomePageObject(driver);
+        homePage = new UserHomePageObject(driver);
 
     }
 
@@ -54,7 +54,7 @@ public class Level_05_Page_Generator_2 extends BaseTest {
         Assert.assertEquals(registerPage.getRegisterSuccessMessage(), "Your registration completed");
 
         // Về lại trang HOME
-        homePage = registerPage.clickToLogoutLink();
+        homePage = registerPage.clickToLogoutLinkUserSite(driver);
         // Điểm kết thúc của testcase trên là bắt đầu của testcase dưới
     }
 
@@ -74,7 +74,7 @@ public class Level_05_Page_Generator_2 extends BaseTest {
     @Test
     public void TC_03_MyAccount() {
 
-        customerPage = homePage.clickToMyAccountLink();
+        customerPage = homePage.clickToMyAccountLinkUserSite(driver);
 
         Assert.assertEquals(customerPage.getFirstNameTextboxValue(),firstName);
         Assert.assertEquals(customerPage.getLastNameTextboxValue(),lastName);

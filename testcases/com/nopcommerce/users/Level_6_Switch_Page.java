@@ -8,14 +8,18 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import pageObjects.nopCommerce.*;
+import pageObjects.nopCommerce.sideBar.AddressPageObject;
+import pageObjects.nopCommerce.sideBar.CustomerInforPageObject;
+import pageObjects.nopCommerce.sideBar.OrderPageObject;
+import pageObjects.nopCommerce.sideBar.RewardPointPageObject;
 
 public class Level_6_Switch_Page extends BaseTest {
 
     WebDriver driver;
     String firstName, emailAddress, lastName, companyName, password;
-    HomePageObject homePage;
-    LoginPageObject loginPage;
-    RegisterPageObject registerPage;
+    UserHomePageObject homePage;
+    UserLoginPageObject loginPage;
+    UserRegisterPageObject registerPage;
     CustomerInforPageObject customerPage;
     AddressPageObject addressPage;
     RewardPointPageObject rewardPointPage;
@@ -35,7 +39,7 @@ public class Level_6_Switch_Page extends BaseTest {
         emailAddress = "afc" + generateFakeNumber() + "@kype.com";
         
 
-        homePage = PageGenerator.getPageInstance(HomePageObject.class, driver);
+        homePage = PageGenerator.getPageInstance(UserHomePageObject.class, driver);
 
     }
 
@@ -55,7 +59,7 @@ public class Level_6_Switch_Page extends BaseTest {
         Assert.assertEquals(registerPage.getRegisterSuccessMessage(), "Your registration completed");
 
         // Về lại trang HOME
-        homePage = registerPage.clickToLogoutLink();
+        homePage = registerPage.clickToLogoutLinkUserSite(driver);
         // Điểm kết thúc của testcase trên là bắt đầu của testcase dưới
     }
 
@@ -64,6 +68,7 @@ public class Level_6_Switch_Page extends BaseTest {
 
         // Từ Home qua Login
         loginPage = homePage.clickToLoginLink();
+
 
         loginPage.enterToEmailTextbox(emailAddress);
         loginPage.enterToPasswordTextbox(password);
@@ -75,7 +80,7 @@ public class Level_6_Switch_Page extends BaseTest {
     @Test
     public void TC_03_MyAccount() {
 
-        customerPage = homePage.clickToMyAccountLink();
+        customerPage = homePage.clickToMyAccountLinkUserSite(driver);
 
         Assert.assertEquals(customerPage.getFirstNameTextboxValue(),firstName);
         Assert.assertEquals(customerPage.getLastNameTextboxValue(),lastName);

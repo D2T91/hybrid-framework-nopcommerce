@@ -2,8 +2,7 @@ package pageObjects.nopCommerce;
 
 import commons.BasePage;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.testng.annotations.Test;
+import pageObjects.nopCommerce.sideBar.CustomerInforPageObject;
 
 import java.lang.reflect.Constructor;
 
@@ -11,24 +10,24 @@ public class PageGenerator {
 
     // Viết các đoạn khởi tạo các PageObject thành các hàm khác nhau
 
-    public static HomePageObject getHomePage(WebDriver driver) {
-        return new HomePageObject(driver);
+    public static UserHomePageObject getHomePage(WebDriver driver) {
+        return new UserHomePageObject(driver);
     }
 
-    public static LoginPageObject getLoginPage(WebDriver driver) {
-        return new LoginPageObject(driver);
+    public static UserLoginPageObject getLoginPage(WebDriver driver) {
+        return new UserLoginPageObject(driver);
     }
 
-    public static RegisterPageObject getRegisterPage(WebDriver driver) {
-        return new RegisterPageObject(driver);
+    public static UserRegisterPageObject getRegisterPage(WebDriver driver) {
+        return new UserRegisterPageObject(driver);
     }
 
     public static CustomerInforPageObject getCustomerInforPage(WebDriver driver) {
         return new CustomerInforPageObject(driver);
     }
 
-    // Tất cả Class kế thừa BasePage đều dùng được hàm này (các Page Object)
-    // Sử dụng hàm này sẽ không cần tạo từng hàm như trên nữa
+    // Tất cả Class kế thừa BasePage đều dùng được hàm này (các PageObject)
+    // Sử dụng hàm này sẽ không cần tạo từng hàm như trên
     public static <T extends BasePage> T getPageInstance(Class<T>pageClass, WebDriver driver) {
         try {
             // Lấy constructor nhận WebDriver

@@ -7,12 +7,13 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import pageObjects.nopCommerce.*;
+import pageObjects.nopCommerce.sideBar.AddressPageObject;
 import pageObjects.nopCommerce.sideBar.CustomerInforPageObject;
-import pageObjects.nopCommerce.UserHomePageObject;
-import pageObjects.nopCommerce.UserLoginPageObject;
-import pageObjects.nopCommerce.UserRegisterPageObject;
+import pageObjects.nopCommerce.sideBar.OrderPageObject;
+import pageObjects.nopCommerce.sideBar.RewardPointPageObject;
 
-public class Level_05_Page_Generator extends BaseTest {
+public class Level_7_Page_Navigation extends BaseTest {
 
     WebDriver driver;
     String firstName, emailAddress, lastName, companyName, password;
@@ -20,6 +21,10 @@ public class Level_05_Page_Generator extends BaseTest {
     UserLoginPageObject loginPage;
     UserRegisterPageObject registerPage;
     CustomerInforPageObject customerPage;
+    AddressPageObject addressPage;
+    RewardPointPageObject rewardPointPage;
+    OrderPageObject orderPage;
+
 
     @Parameters({"url", "browser"})
     @BeforeClass
@@ -32,17 +37,16 @@ public class Level_05_Page_Generator extends BaseTest {
         companyName = "Fivebright";
         password = "Tung8545059@";
         emailAddress = "afc" + generateFakeNumber() + "@kype.com";
+        
 
-
-        homePage = new UserHomePageObject(driver);
+        homePage = PageGenerator.getPageInstance(UserHomePageObject.class, driver);
 
     }
 
     @Test
     public void TC_01_Register() {
-        homePage.clickToRegisterLink();
- 
-        registerPage = new UserRegisterPageObject(driver);
+
+        registerPage = homePage.clickToRegisterLink();
 
         registerPage.enterToFirstNameTextbox(firstName);
         registerPage.enterToLastNameTextbox(lastName);
@@ -54,37 +58,53 @@ public class Level_05_Page_Generator extends BaseTest {
 
         Assert.assertEquals(registerPage.getRegisterSuccessMessage(), "Your registration completed");
 
-        registerPage.clickToLogoutLinkUserSite(driver);
         // Về lại trang HOME
-        homePage = new UserHomePageObject(driver);
+        homePage = registerPage.clickToLogoutLinkUserSite(driver);
         // Điểm kết thúc của testcase trên là bắt đầu của testcase dưới
     }
 
     @Test
     public void TC_02_Login() {
-        homePage.clickToLoginLink();
 
         // Từ Home qua Login
-        loginPage = new UserLoginPageObject(driver);
+        loginPage = homePage.clickToLoginLink();
+
 
         loginPage.enterToEmailTextbox(emailAddress);
         loginPage.enterToPasswordTextbox(password);
 
-        loginPage.clickToLoginButton();
-
-        homePage = new UserHomePageObject(driver);
+        homePage = loginPage.clickToLoginButton();
 
     }
 
     @Test
     public void TC_03_MyAccount() {
-        homePage.clickToMyAccountLinkUserSite(driver);
 
-        customerPage = new CustomerInforPageObject(driver);
+        customerPage = homePage.clickToMyAccountLinkUserSite(driver);
 
         Assert.assertEquals(customerPage.getFirstNameTextboxValue(),firstName);
         Assert.assertEquals(customerPage.getLastNameTextboxValue(),lastName);
         Assert.assertEquals(customerPage.getEmailAddressTextboxValue(),emailAddress);
+
+    }
+
+    @Test
+    public void TC_04_SwitchPage() {
+
+        // Customer > Address
+        addressPage = customerPage.openAddressPage(driver);
+
+        // Address > Reward Point
+        rewardPointPage = addressPage.openRewardPointPage(driver);
+
+        // Reward Point > Order
+        orderPage = rewardPointPage.openOrderPage(driver);
+
+        // Order > Customer
+        customerPage = orderPage.openCustomerPage(driver);
+
+        // Customer > Reward Point
+        rewardPointPage = customerPage.openRewardPointPage(driver);
 
     }
 

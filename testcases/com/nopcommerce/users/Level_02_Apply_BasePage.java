@@ -16,7 +16,6 @@ public class Level_02_Apply_BasePage {
     WebDriver driver;
     String emailAddress;
     String projectPath = System.getProperty("user.dir");
-
     BasePage basePage;
 
     @BeforeClass

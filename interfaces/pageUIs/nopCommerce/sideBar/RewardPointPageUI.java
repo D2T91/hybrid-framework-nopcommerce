@@ -1,4 +1,4 @@
-package pageUIs.nopCommerce;
+package pageUIs.nopCommerce.sideBar;
 
 public class RewardPointPageUI {
 

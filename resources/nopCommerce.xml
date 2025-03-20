@@ -1,12 +1,14 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
 
 <suite name="NopCommerce UI Automation" verbose="1" >
-    <parameter name="url" value="https://demo.nopcommerce.com/"></parameter>
+    <parameter name="urlUser" value="https://demo.nopcommerce.com/"></parameter>
+
+    <parameter name="urlAdmin" value="https://admin-demo.nopcommerce.com/"></parameter>
 
     <test name="Run on FIREFOX browser" >
         <parameter name="browser" value="FIREFOX"></parameter>
         <classes>
-            <class name="com.nopcommerce.users.Level_6_Switch_Page" />
+            <class name="com.nopcommerce.users.Level_9_By_Locator" />
         </classes>
     </test>
 

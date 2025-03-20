@@ -3,12 +3,14 @@ package commons;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.Color;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import pageObjects.AdminProductPageObject;
 import pageObjects.nopCommerce.*;
+import pageObjects.nopCommerce.sideBar.CustomerInforPageObject;
 import pageUIs.nopCommerce.*;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
@@ -108,15 +110,36 @@ public class BasePage {
     }
 
     private WebElement getWebElement(WebDriver driver, String locator) {
-        return driver.findElement(getByXpath(locator));
+        return driver.findElement(getByLocator(locator));
     }
 
     private By getByXpath(String locator) {
         return By.xpath(locator);
     }
 
+    public By getByLocator(String locator) {
+        if (locator.isEmpty() || locator == null) {
+            throw new RuntimeException("Locator type cannot be null or empty");
+        }
+
+        switch (locator.split("=")[0].toLowerCase()) {
+            case "xpath" :
+                return By.xpath(locator.substring(6));
+            case "css" :
+                return By.cssSelector(locator.substring(4));
+            case "id" :
+                return By.id(locator.substring(3));
+            case "class" :
+                return By.className(locator.substring(6));
+            case "name" :
+                return By.name(locator.substring(5));
+            default:
+                throw new InvalidArgumentException("Locator type is not support");
+        }
+    }
+
     private List<WebElement> getListWebElement(WebDriver driver, String locator) {
-        return driver.findElements(getByXpath(locator));
+        return driver.findElements(getByLocator(locator));
     }
 
     public void clickToElement(WebDriver driver, String locator) {
@@ -142,7 +165,7 @@ public class BasePage {
 
     public void selectItemInCustomDropdown(WebDriver driver, String parentXpath, String childXpath, String textItem) {
         WebDriverWait explicitWait = new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT));
-        explicitWait.until(ExpectedConditions.elementToBeClickable(getByXpath(parentXpath))).click();
+        explicitWait.until(ExpectedConditions.elementToBeClickable(getByLocator(parentXpath))).click();
         sleepInSecond(2);
 
         List<WebElement> allItems = waitForListElementPresence(driver, childXpath);
@@ -240,7 +263,7 @@ public class BasePage {
 
     public void hightlightElement(WebDriver driver, String locator) {
         WebElement element = getWebElement(driver, locator);
-        String originalStyle = element.getAttribute("style");
+        String originalStyle = element.getDomAttribute("style"); //
         ((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute('style', arguments[1])", element, "border: 2px solid red; border-style: dashed;");
         sleepInSecond(2);
         ((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute('style', arguments[1])", element, originalStyle);
@@ -295,15 +318,15 @@ public class BasePage {
 
     // Wait
     public WebElement waitForElementVisible(WebDriver driver, String locator) {
-        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.visibilityOfElementLocated(getByXpath(locator)));
+        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.visibilityOfElementLocated(getByLocator(locator)));
     }
 
     public List<WebElement> waitForListElementVisible(WebDriver driver, String locator) {
-        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(getByXpath(locator)));
+        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(getByLocator(locator)));
     }
 
     public boolean waitForElementInvisible(WebDriver driver, String locator) {
-        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.invisibilityOfElementLocated(getByXpath(locator)));
+        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.invisibilityOfElementLocated(getByLocator(locator)));
     }
 
     public boolean waitForListElementInvisible(WebDriver driver, String locator) {
@@ -311,44 +334,81 @@ public class BasePage {
     }
 
     public WebElement waitForElementClickable(WebDriver driver, String locator) {
-        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.elementToBeClickable(getByXpath(locator)));
+        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.elementToBeClickable(getByLocator(locator)));
     }
 
     public WebElement waitForElementPresence(WebDriver driver, String locator) {
-        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.presenceOfElementLocated(getByXpath(locator)));
+        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.presenceOfElementLocated(getByLocator(locator)));
     }
 
     public List<WebElement> waitForListElementPresence(WebDriver driver, String locator) {
-        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(getByXpath(locator)));
+        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(getByLocator(locator)));
     }
 
     public boolean waitForElementSelected(WebDriver driver, String locator) {
-        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.elementToBeSelected(getByXpath(locator)));
+        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.elementToBeSelected(getByLocator(locator)));
     }
 
-    // Open page tại My Account Page
-
-    public AddressPageObject openAddressPage(WebDriver driver) {
-        waitForElementClickable(driver, BasePageUI.ADDRESS_LINK);
-        clickToElement(driver, BasePageUI.ADDRESS_LINK);
-        return PageGenerator.getPageInstance(AddressPageObject.class, driver);
-    }
-
-    public RewardPointPageObject openRewardPointPage(WebDriver driver) {
-        waitForElementClickable(driver, BasePageUI.REWARD_POINT_LINK);
-        clickToElement(driver, BasePageUI.REWARD_POINT_LINK);
-        return PageGenerator.getPageInstance(RewardPointPageObject.class, driver);
-    }
-
-    public OrderPageObject openOrderPage(WebDriver driver) {
-        waitForElementClickable(driver, BasePageUI.ORDER_LINK);
-        clickToElement(driver, BasePageUI.ORDER_LINK);
-        return PageGenerator.getPageInstance(OrderPageObject.class, driver);
-    }
-
-    public CustomerInforPageObject openCustomerPage(WebDriver driver) {
-        waitForElementClickable(driver, BasePageUI.CUSTOMER_INFO_LINK);
-        clickToElement(driver, BasePageUI.CUSTOMER_INFO_LINK);
+    public CustomerInforPageObject clickToMyAccountLinkUserSite(WebDriver driver) {
+        waitForElementClickable(driver, BasePageUI.USER_MY_ACCOUNT_LINK);
+        clickToElement(driver, BasePageUI.USER_MY_ACCOUNT_LINK);
         return PageGenerator.getPageInstance(CustomerInforPageObject.class, driver);
+    }
+
+    public UserHomePageObject clickToLogoutLinkUserSite(WebDriver driver) {
+        waitForElementClickable(driver, BasePageUI.USER_LOGOUT_LINK);
+        clickToElement(driver, BasePageUI.USER_LOGOUT_LINK);
+        return PageGenerator.getPageInstance(UserHomePageObject.class, driver);
+    }
+
+    public boolean isPageLoadedSuccess(WebDriver driver) {
+        WebDriverWait explicitWait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+        ExpectedCondition<Boolean> jQueryLoad = new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                return (Boolean) jsExecutor.executeScript("return (window.jQuery != null) && (jQuery.active === 0);");
+            }
+        };
+
+        ExpectedCondition<Boolean> jsLoad = new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                return jsExecutor.executeScript("return document.readyState").toString().equals("complete");
+            }
+        };
+        return explicitWait.until(jQueryLoad) && explicitWait.until(jsLoad);
+    }
+
+    public AdminLoginPageObject clickToLogoutLinkAdminSite(WebDriver driver) {
+        waitForElementClickable(driver, BasePageUI.ADMIN_LOGOUT_LINK);
+        clickToElement(driver, BasePageUI.ADMIN_LOGOUT_LINK);
+
+        return PageGenerator.getPageInstance(AdminLoginPageObject.class, driver);
+    }
+
+    public UserHomePageObject openUserSite(WebDriver driver, String userUrl) {
+        openPageUrl(driver, userUrl);
+        return PageGenerator.getPageInstance(UserHomePageObject.class, driver);
+    }
+
+    public AdminLoginPageObject openAdminSite(WebDriver driver, String adminUrl) {
+        openPageUrl(driver, adminUrl);
+        return PageGenerator.getPageInstance(AdminLoginPageObject.class, driver);
+    }
+
+    public AdminProductPageObject openAdminProductPage(WebDriver driver) {
+        String attributeValue = getElementAttribute(driver, BasePageUI.ADMIN_PRODUCT_MENU, "class");
+        if (!attributeValue.endsWith("menu-open")) {
+            waitForElementClickable(driver, BasePageUI.ADMIN_PRODUCT_MENU);
+            clickToElement(driver, BasePageUI.ADMIN_PRODUCT_MENU);
+        }
+
+        // Sub-Menu
+        waitForElementClickable(driver, BasePageUI.ADMIN_PRODUCT_SUBMENU);
+        clickToElement(driver, BasePageUI.ADMIN_PRODUCT_SUBMENU);
+
+        return PageGenerator.getPageInstance(AdminProductPageObject.class, driver);
+
     }
 }

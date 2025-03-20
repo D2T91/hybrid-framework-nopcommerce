@@ -12,7 +12,7 @@ public class BaseTest {
 
     private WebDriver driver;
 
-    // Set protected vì chỉ muốn lớp con kế thừa mới có thể GỌI
+    // Set protected vì chỉ cần lớp con kế thừa mới có thể GỌI
     protected WebDriver getBrowserDriver(String urlValue, String browserName) {
 
         BrowserType browserType = BrowserType.valueOf(browserName.toUpperCase());
