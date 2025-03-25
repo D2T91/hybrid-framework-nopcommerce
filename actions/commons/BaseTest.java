@@ -5,6 +5,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.safari.SafariDriver;
+import java.time.Duration;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +13,7 @@ public class BaseTest {
 
     private WebDriver driver;
 
-    // Set protected vì chỉ cần lớp con kế thừa mới có thể GỌI
+    // Set protected chỉ cần lớp con kế thừa mới có thể GỌI
     protected WebDriver getBrowserDriver(String urlValue, String browserName) {
 
         BrowserType browserType = BrowserType.valueOf(browserName.toUpperCase());
@@ -33,7 +34,7 @@ public class BaseTest {
                 throw new IllegalArgumentException("Browser Name is not valid");
         }
 
-        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT));
         driver.manage().window().maximize();
         driver.get(urlValue);
         return driver;
@@ -49,4 +50,5 @@ public class BaseTest {
             driver.quit();
         }
     }
+
 }

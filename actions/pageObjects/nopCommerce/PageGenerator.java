@@ -1,9 +1,7 @@
 package pageObjects.nopCommerce;
-
 import commons.BasePage;
 import org.openqa.selenium.WebDriver;
 import pageObjects.nopCommerce.sideBar.CustomerInforPageObject;
-
 import java.lang.reflect.Constructor;
 
 public class PageGenerator {
@@ -26,7 +24,7 @@ public class PageGenerator {
         return new CustomerInforPageObject(driver);
     }
 
-    // Tất cả Class kế thừa BasePage đều dùng được hàm này (các PageObject)
+    // Tất cả Class kế thừa BasePage sẽ dùng được hàm này (các PageObject)
     // Sử dụng hàm này sẽ không cần tạo từng hàm như trên
     public static <T extends BasePage> T getPageInstance(Class<T>pageClass, WebDriver driver) {
         try {

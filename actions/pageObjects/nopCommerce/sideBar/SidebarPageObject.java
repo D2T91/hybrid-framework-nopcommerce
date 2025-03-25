@@ -37,4 +37,29 @@ public class SidebarPageObject extends BasePage {
         clickToElement(driver, SideBarPageUI.CUSTOMER_INFO_LINK);
         return PageGenerator.getPageInstance(CustomerInforPageObject.class, driver);
     }
+
+    public SidebarPageObject openSidebarLinkByPageName(String pageName) {
+        waitForElementClickable(driver, SideBarPageUI.DYNAMIC_LINK_BY_PAGE_NAME, pageName);
+        clickToElement(driver, SideBarPageUI.DYNAMIC_LINK_BY_PAGE_NAME, pageName);
+
+        switch (pageName) {
+            case "Addresses" :
+                return PageGenerator.getPageInstance(AddressPageObject.class, driver);
+            case "Reward points" :
+                return PageGenerator.getPageInstance(RewardPointPageObject.class, driver);
+            case "Customer info" :
+                return PageGenerator.getPageInstance(CustomerInforPageObject.class, driver);
+            case "Orders" :
+                return PageGenerator.getPageInstance(OrderPageObject.class, driver);
+            default:
+                throw new RuntimeException("Page name is not valid");
+        }
+    }
+
+    public void openSidebarLinkByPageNames(String pageName) {
+        waitForElementClickable(driver, SideBarPageUI.DYNAMIC_LINK_BY_PAGE_NAME, pageName);
+        clickToElement(driver, SideBarPageUI.ORDER_LINK, pageName);
+
+    }
+
 }

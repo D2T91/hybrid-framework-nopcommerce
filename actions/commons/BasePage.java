@@ -7,7 +7,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pageObjects.AdminProductPageObject;
+import pageObjects.nopCommerce.AdminProductPageObject;
 import pageObjects.nopCommerce.*;
 import pageObjects.nopCommerce.sideBar.CustomerInforPageObject;
 import pageUIs.nopCommerce.*;
@@ -117,6 +117,10 @@ public class BasePage {
         return By.xpath(locator);
     }
 
+    private String castParameter(String locator, String... restParameter) {
+        return String.format(locator, (Object[]) restParameter);
+    }
+
     public By getByLocator(String locator) {
         if (locator.isEmpty() || locator == null) {
             throw new RuntimeException("Locator type cannot be null or empty");
@@ -138,12 +142,21 @@ public class BasePage {
         }
     }
 
-    private List<WebElement> getListWebElement(WebDriver driver, String locator) {
+    protected List<WebElement> getListWebElement(WebDriver driver, String locator) {
         return driver.findElements(getByLocator(locator));
+    }
+
+    protected List<WebElement> getListWebElement(WebDriver driver, String locator, String... restParameter) {
+        return driver.findElements(getByLocator(castParameter(locator, restParameter)));
     }
 
     public void clickToElement(WebDriver driver, String locator) {
         getWebElement(driver, locator).click();
+    }
+
+    public void clickToElement(WebDriver driver, String locator, String... restParameter) {
+        getWebElement(driver, castParameter(locator, restParameter)).click();
+        // return driver.findElement(getByLocator(locator));
     }
 
     public void sendkeyToElement(WebDriver driver, String locator, String valueToSend) {
@@ -151,8 +164,17 @@ public class BasePage {
         getWebElement(driver, locator).sendKeys(valueToSend);
     }
 
+    public void sendkeyToElement(WebDriver driver, String locator, String valueToSend, String... restParameter) {
+        getWebElement(driver, castParameter(locator, restParameter)).clear();
+        getWebElement(driver, castParameter(locator, restParameter)).sendKeys(valueToSend);
+    }
+
     public void selectItemDropdown(WebDriver driver, String locator, String textItem) {
         new Select(getWebElement(driver, locator)).selectByVisibleText(textItem);
+    }
+
+    public void selectItemDropdown(WebDriver driver, String locatorSelect, String textItem, String... restParameter) {
+        new Select(getWebElement(driver, castParameter(locatorSelect, restParameter))).selectByVisibleText(textItem);
     }
 
     public String getSelectedItemInDropdown(WebDriver driver, String locator) {
@@ -190,8 +212,16 @@ public class BasePage {
         return getWebElement(driver, locator).getText();
     }
 
+    public String getElementText(WebDriver driver, String locator, String... restParameter) {
+        return getWebElement(driver, castParameter(locator, restParameter)).getText();
+    }
+
     public String getElementAttribute(WebDriver driver, String locator, String attributeName) {
         return getWebElement(driver, locator).getDomAttribute(attributeName);
+    }
+
+    public String getElementAttribute(WebDriver driver, String locator, String attributeName, String... restParameter) {
+        return getWebElement(driver, castParameter(locator, restParameter)).getDomAttribute(attributeName);
     }
 
     public String getCssValue(WebDriver driver, String locator, String propertyName) {
@@ -212,9 +242,21 @@ public class BasePage {
         }
     }
 
+    public void checkToCheckBoxradio(WebDriver driver, String locator, String... restParameter) {
+        if (!getWebElement(driver, castParameter(locator, restParameter)).isSelected()) {
+            getWebElement(driver, castParameter(locator, restParameter)).click();
+        }
+    }
+
     public void uncheckToCheckBox(WebDriver driver, String locator) {
         if (getWebElement(driver, locator).isSelected()) {
             getWebElement(driver, locator).click();
+        }
+    }
+
+    public void uncheckToCheckBox(WebDriver driver, String locator, String... restParameter) {
+        if (getWebElement(driver, castParameter(locator, restParameter)).isSelected()) {
+            getWebElement(driver, castParameter(locator, restParameter)).click();
         }
     }
 
@@ -222,8 +264,16 @@ public class BasePage {
         return getWebElement(driver, locator).isDisplayed();
     }
 
+    public boolean isElementDisplayed(WebDriver driver, String locator, String... restParameter) {
+        return getWebElement(driver, castParameter(locator, restParameter)).isDisplayed();
+    }
+
     public boolean isElementSelected(WebDriver driver, String locator) {
         return getWebElement(driver, locator).isSelected();
+    }
+
+    public boolean isElementSelected(WebDriver driver, String locator, String... restParameter) {
+        return getWebElement(driver, castParameter(locator, restParameter)).isSelected();
     }
 
     public boolean isElementEnabled(WebDriver driver, String locator) {
@@ -257,6 +307,16 @@ public class BasePage {
 
     public void sendkeyBoardToElement(WebDriver driver, String locator, Keys key) {
         new Actions(driver).sendKeys(getWebElement(driver, locator), key).perform();
+    }
+
+    // Enter vào phần tử lOCATOR
+    public void pressKeyToElement(WebDriver driver, String locator, Keys keys) {
+        new Actions(driver).sendKeys(getWebElement(driver, locator), keys).perform();
+    }
+
+    // Enter vào phần tử lOCATOR
+    public void pressKeyToElement(WebDriver driver, String locator, Keys keys, String... restParameter) {
+        new Actions(driver).sendKeys(getWebElement(driver, castParameter(locator, restParameter)), keys).perform();
     }
 
     // JavascriptExecutor in BasePage
@@ -321,6 +381,10 @@ public class BasePage {
         return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.visibilityOfElementLocated(getByLocator(locator)));
     }
 
+    public WebElement waitForElementVisible(WebDriver driver, String locator, String... restParameter) {
+        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.visibilityOfElementLocated(getByLocator(castParameter(locator, restParameter))));
+    }
+
     public List<WebElement> waitForListElementVisible(WebDriver driver, String locator) {
         return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(getByLocator(locator)));
     }
@@ -337,6 +401,10 @@ public class BasePage {
         return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.elementToBeClickable(getByLocator(locator)));
     }
 
+    public WebElement waitForElementClickable(WebDriver driver, String locator, String... restParameter) {
+        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.elementToBeClickable(getByLocator(castParameter(locator, restParameter))));
+    }
+
     public WebElement waitForElementPresence(WebDriver driver, String locator) {
         return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.presenceOfElementLocated(getByLocator(locator)));
     }
@@ -347,6 +415,10 @@ public class BasePage {
 
     public boolean waitForElementSelected(WebDriver driver, String locator) {
         return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.elementToBeSelected(getByLocator(locator)));
+    }
+
+    public boolean waitForElementSelected(WebDriver driver, String locator, String... restParameter) {
+        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.elementToBeSelected(getByLocator(castParameter(locator, restParameter))));
     }
 
     public CustomerInforPageObject clickToMyAccountLinkUserSite(WebDriver driver) {
@@ -362,7 +434,7 @@ public class BasePage {
     }
 
     public boolean isPageLoadedSuccess(WebDriver driver) {
-        WebDriverWait explicitWait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        WebDriverWait explicitWait = new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT));
         JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
         ExpectedCondition<Boolean> jQueryLoad = new ExpectedCondition<Boolean>() {
             @Override

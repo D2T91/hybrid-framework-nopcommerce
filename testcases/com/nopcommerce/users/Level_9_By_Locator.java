@@ -1,15 +1,13 @@
 package com.nopcommerce.users;
 
 import commons.BaseTest;
-import org.openqa.selenium.By;
-import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import pageObjects.AdminProductPageObject;
+import pageObjects.nopCommerce.AdminProductPageObject;
 import pageObjects.nopCommerce.*;
 import pageObjects.nopCommerce.sideBar.AddressPageObject;
 import pageObjects.nopCommerce.sideBar.CustomerInforPageObject;
