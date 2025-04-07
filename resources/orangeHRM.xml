@@ -2,27 +2,30 @@
 
 <suite name="OrangeHRM UI Automation" verbose="1" >
 
-    <parameter name="url" value="https://opensource-demo.orangehrmlive.com/"></parameter>
-    <parameter name="server" value="dev"></parameter>
+    <listeners>
+        <listener class-name="commons.MethodListener"></listener>
+    </listeners>
 
-    <test name="Run on Edge browser" >
-        <parameter name="browser" value="edge"></parameter>
-        <classes>
-            <class name="com.orangehrm.employee.Level_04_Multiple_Browser" />
-        </classes>
-    </test>
+    <parameter name="url" value="http://localhost/orangehrm-5.7/web/index.php/auth/login"></parameter>
 
     <test name="Run on Firefox browser" >
-        <parameter name="browser" value="fireFox"></parameter>
+        <parameter name="browser" value="firefox"></parameter>
         <classes>
-            <class name="com.orangehrm.employee.Level_04_Multiple_Browser" />
+            <class name="com.orangehrm.pim.PIM_01_Employee" />
         </classes>
     </test>
 
     <test name="Run on Chrome browser" >
         <parameter name="browser" value="chrome"></parameter>
         <classes>
-            <class name="com.orangehrm.employee.Level_04_Multiple_Browser" />
+            <class name="com.orangehrm.pim.PIM_01_Employee" />
+        </classes>
+    </test>
+
+    <test name="Run on Edge browser" >
+        <parameter name="browser" value="edge"></parameter>
+        <classes>
+            <class name="com.orangehrm.pim.PIM_01_Employee" />
         </classes>
     </test>
 

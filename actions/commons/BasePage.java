@@ -7,17 +7,21 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import pageObjects.nopCommerce.AdminLoginPageObject;
 import pageObjects.nopCommerce.AdminProductPageObject;
-import pageObjects.nopCommerce.*;
+import pageObjects.nopCommerce.PageGenerator;
+import pageObjects.nopCommerce.UserHomePageObject;
 import pageObjects.nopCommerce.sideBar.CustomerInforPageObject;
-import pageUIs.nopCommerce.*;
+import pageUIs.nopCommerce.BasePageUI;
+import pageUIs.orangeHRM.BasePageHRMUI;
+
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 
 public class BasePage {
 
-    // Hàm static có thể gọi trực tiếp từ Class mà không cần thông qua đối tượng
+    // Hàm static gọi trực tiếp từ Class không cần thông qua đối tượng
     public static BasePage getBasePage() {
         return new BasePage();
     }
@@ -53,7 +57,7 @@ public class BasePage {
         driver.navigate().refresh();
     }
 
-    // Chờ Alert xuất hiện và switch qua luôn
+    // Chờ Alert xuất hiện và switch qua
     private Alert waitToAlertPresence(WebDriver driver) {
         return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT))
                 .until(ExpectedConditions.alertIsPresent());
@@ -125,7 +129,6 @@ public class BasePage {
         if (locator.isEmpty() || locator == null) {
             throw new RuntimeException("Locator type cannot be null or empty");
         }
-
         switch (locator.split("=")[0].toLowerCase()) {
             case "xpath" :
                 return By.xpath(locator.substring(6));
@@ -169,20 +172,26 @@ public class BasePage {
         getWebElement(driver, castParameter(locator, restParameter)).sendKeys(valueToSend);
     }
 
+    public void sendkeyToElementWithKey(WebDriver driver, String locator, String valueToSend) {
+        Keys key = null;
+        if (GlobalConstants.OS_NAME.startsWith("Windows")) {
+            key = Keys.CONTROL;
+        } else {
+            key = Keys.COMMAND;
+        }
+
+        getWebElement(driver, locator).sendKeys(Keys.chord(key,"a",Keys.BACK_SPACE));
+        sleepInSecond(1000);
+        getWebElement(driver, locator).sendKeys(valueToSend);
+    }
+
+
     public void selectItemDropdown(WebDriver driver, String locator, String textItem) {
         new Select(getWebElement(driver, locator)).selectByVisibleText(textItem);
     }
 
     public void selectItemDropdown(WebDriver driver, String locatorSelect, String textItem, String... restParameter) {
         new Select(getWebElement(driver, castParameter(locatorSelect, restParameter))).selectByVisibleText(textItem);
-    }
-
-    public String getSelectedItemInDropdown(WebDriver driver, String locator) {
-        return new Select(getWebElement(driver, locator)).getFirstSelectedOption().getText();
-    }
-
-    public boolean isDropdownMultiple(WebDriver driver, String locator) {
-        return new Select(getWebElement(driver, locator)).isMultiple();
     }
 
     public void selectItemInCustomDropdown(WebDriver driver, String parentXpath, String childXpath, String textItem) {
@@ -193,11 +202,19 @@ public class BasePage {
         List<WebElement> allItems = waitForListElementPresence(driver, childXpath);
 
         for (WebElement item : allItems) {
-            if (item.equals(textItem)) {
+            if (item.getText().equals(textItem)) {
                 item.click();
                 break;
             }
         }
+    }
+
+    public String getSelectedItemInDropdown(WebDriver driver, String locator) {
+        return new Select(getWebElement(driver, locator)).getFirstSelectedOption().getText();
+    }
+
+    public boolean isDropdownMultiple(WebDriver driver, String locator) {
+        return new Select(getWebElement(driver, locator)).isMultiple();
     }
 
     public static void sleepInSecond(long timeInSecond) {
@@ -206,6 +223,10 @@ public class BasePage {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Dimension getElementSize(WebDriver driver, String locator) {
+        return getWebElement(driver, locator).getSize();
     }
 
     public String getElementText(WebDriver driver, String locator) {
@@ -217,11 +238,11 @@ public class BasePage {
     }
 
     public String getElementAttribute(WebDriver driver, String locator, String attributeName) {
-        return getWebElement(driver, locator).getDomAttribute(attributeName);
+        return getWebElement(driver, locator).getDomProperty(attributeName);
     }
 
     public String getElementAttribute(WebDriver driver, String locator, String attributeName, String... restParameter) {
-        return getWebElement(driver, castParameter(locator, restParameter)).getDomAttribute(attributeName);
+        return getWebElement(driver, castParameter(locator, restParameter)).getDomProperty(attributeName);
     }
 
     public String getCssValue(WebDriver driver, String locator, String propertyName) {
@@ -260,9 +281,38 @@ public class BasePage {
         }
     }
 
+    // CÁCH 1
+
     public boolean isElementDisplayed(WebDriver driver, String locator) {
-        return getWebElement(driver, locator).isDisplayed();
+        try {
+            return getWebElement(driver, locator).isDisplayed();
+        } catch (NoSuchElementException e) {
+            // Nếu vào trường hợp 3 : element ko có UI và HTML > trả về false
+            return false;
+        }
     }
+
+    // CÁCH 2 Dùng findElements và kiếm tra Size = 0
+
+    public boolean isElementUndisplayed(WebDriver driver, String locator) {
+        overideGlobalTimeout(driver, GlobalConstants.SHORT_TIMEOUT);
+        List<WebElement> elements = getListWebElement(driver, locator);
+        overideGlobalTimeout(driver, GlobalConstants.LONG_TIMEOUT);
+
+        if (elements.size() == 0 ) {
+            return true;
+        } else  if (elements.size() > 0 && !elements.get(0).isDisplayed() ) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public void overideGlobalTimeout(WebDriver driver, long timeInsecond) {
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeInsecond));
+    }
+
 
     public boolean isElementDisplayed(WebDriver driver, String locator, String... restParameter) {
         return getWebElement(driver, castParameter(locator, restParameter)).isDisplayed();
@@ -289,6 +339,7 @@ public class BasePage {
     }
 
     // User Actions
+
     public void hoverToElement(WebDriver driver, String locator) {
         new Actions(driver).moveToElement(getWebElement(driver, locator)).perform();
     }
@@ -334,6 +385,11 @@ public class BasePage {
         sleepInSecond(3);
     }
 
+    public void clickToElementByJS(WebDriver driver, String locator, String... restParameter) {
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", getWebElement(driver, castParameter(locator, restParameter)));
+        sleepInSecond(3);
+    }
+
     public void scrollToElementOnTopByJS(WebDriver driver, String locator) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", getWebElement(driver, locator));
     }
@@ -376,7 +432,15 @@ public class BasePage {
         return (String) ((JavascriptExecutor) driver).executeScript("return document.domain;");
     }
 
-    // Wait
+    // WAIT
+    public Boolean waitForElementAttribute(WebDriver driver, String locator, String attributeName, String attributeValue) {
+        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.attributeToBe(getByLocator(locator), attributeName, attributeValue));
+    }
+
+    public Boolean waitForElementAttribute(WebDriver driver, String locator, String attributeName, String attributeValue, String... restParameter) {
+        return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.attributeToBe(getByLocator(castParameter(locator, restParameter)), attributeName, attributeValue));
+    }
+
     public WebElement waitForElementVisible(WebDriver driver, String locator) {
         return new WebDriverWait(driver, Duration.ofSeconds(LONG_TIMEOUT)).until(ExpectedConditions.visibilityOfElementLocated(getByLocator(locator)));
     }
@@ -455,7 +519,6 @@ public class BasePage {
     public AdminLoginPageObject clickToLogoutLinkAdminSite(WebDriver driver) {
         waitForElementClickable(driver, BasePageUI.ADMIN_LOGOUT_LINK);
         clickToElement(driver, BasePageUI.ADMIN_LOGOUT_LINK);
-
         return PageGenerator.getPageInstance(AdminLoginPageObject.class, driver);
     }
 
@@ -482,5 +545,41 @@ public class BasePage {
 
         return PageGenerator.getPageInstance(AdminProductPageObject.class, driver);
 
+    }
+
+    public void upLoadMultipleFiles(WebDriver driver, String... fileNames) {
+        String filePath = GlobalConstants.UPLOAD_PATH;
+        String fullFileName = "";
+        for (String file : fileNames) {
+            fullFileName = fullFileName + filePath + file + "\n";
+        }
+        fullFileName = fullFileName.trim();
+        getWebElement(driver, BasePageUI.UPLOAD_FILE_TYPE).sendKeys(fullFileName);
+    }
+
+    // LV 19
+    public void enterToTextboxByID(WebDriver driver, String textboxID, String valueToSend) {
+        waitForElementVisible(driver, BasePageUI.TEXTBOX_BY_ID, textboxID);
+        sendkeyToElement(driver, BasePageUI.TEXTBOX_BY_ID, valueToSend, textboxID);
+    }
+
+    public void clickToButtonByText(WebDriver driver, String buttonText) {
+        waitForElementClickable(driver, BasePageUI.BUTTON_BY_TEXT, buttonText);
+        checkToCheckBoxradio(driver, BasePageUI.BUTTON_BY_TEXT, buttonText);
+    }
+
+    public void clickToCheckboxByID(WebDriver driver, String checkboxID) {
+        waitForElementClickable(driver, BasePageUI.CHECKBOX_BY_ID, checkboxID);
+        checkToCheckBoxradio(driver, BasePageUI.CHECKBOX_BY_ID, checkboxID);
+    }
+
+    // OrangeHRM Project
+    public boolean waitAllLoadingIconInvisible(WebDriver driver) {
+        return waitForListElementInvisible(driver, BasePageHRMUI.LOADING_ICON);
+    }
+
+    public boolean isSuccessMessageIsDisplayed(WebDriver driver) {
+        waitForElementVisible(driver, BasePageHRMUI.SUCCESS_MESSAGE);
+        return isElementDisplayed(driver, BasePageHRMUI.SUCCESS_MESSAGE);
     }
 }

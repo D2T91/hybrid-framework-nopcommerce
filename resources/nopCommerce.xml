@@ -1,14 +1,32 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
 
 <suite name="NopCommerce UI Automation" verbose="1" >
-    <parameter name="urlUser" value="https://demo.nopcommerce.com/"></parameter>
 
+    <listeners>
+        <listener class-name="commons.MethodListener"></listener>
+    </listeners>
+
+    <parameter name="urlUser" value="http://demo.nopcommerce.com"></parameter>
     <parameter name="urlAdmin" value="https://admin-demo.nopcommerce.com/"></parameter>
 
-    <test name="Run on FIREFOX browser" >
-        <parameter name="browser" value="FIREFOX"></parameter>
+    <test name="Run on Firefox Headless" >
+        <parameter name="browser" value="hfirefox"></parameter>
         <classes>
-            <class name="com.nopcommerce.users.Level_9_By_Locator" />
+            <class name="com.nopcommerce.users.Level_20_Browser_Config" />
+        </classes>
+    </test>
+
+    <test name="Run on Chrome Headless" >
+        <parameter name="browser" value="hchrome"></parameter>
+        <classes>
+            <class name="com.nopcommerce.users.Level_20_Browser_Config" />
+        </classes>
+    </test>
+
+    <test name="Run on Edge Headless" >
+        <parameter name="browser" value="hedge"></parameter>
+        <classes>
+            <class name="com.nopcommerce.users.Level_20_Browser_Config" />
         </classes>
     </test>
 

@@ -16,4 +16,6 @@ public class HomePageUI {
     public static final String DYNAMIC_CHECKBOX_BY_ROW_AND_COLUMN_INDEX = "xpath=//tr[%s]/td[%s]//input";
     public static final String DYNAMIC_ICON_BY_ROW_INDEX = "xpath=//tr[%s]//td//button[starts-with(@title,'%s')]";
 
+    public static final String FILE_LOADED_BY_FILE_NAME = "xpath=//p[@class='name' and text()='%s']";
+    public static final String UPLOAD_BUTTON = "css=td>button.start";
 }

@@ -1,5 +1,5 @@
 package commons;
 
 public enum BrowserType {
-    CHROME, EDGE, FIREFOX, SAFARI;
+    CHROME, EDGE, FIREFOX, SAFARI, HCHROME, HFIREFOX, HEDGE;
 }

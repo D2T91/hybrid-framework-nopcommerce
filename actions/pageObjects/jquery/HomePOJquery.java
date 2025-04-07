@@ -3,7 +3,10 @@ package pageObjects.jquery;
 import commons.BasePage;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import pageUIs.jQuery.HomePageUI;
+
+import java.util.List;
 
 public class HomePOJquery extends BasePage {
 
@@ -92,5 +95,22 @@ public class HomePOJquery extends BasePage {
     public void clickToIconByIndex(String rowIndex, String iconName) {
         waitForElementClickable(driver, HomePageUI.DYNAMIC_ICON_BY_ROW_INDEX, rowIndex, iconName);
         clickToElement(driver, HomePageUI.DYNAMIC_ICON_BY_ROW_INDEX, rowIndex, iconName);
+    }
+
+    // Uplaod File
+    public boolean isFileLoadedByName(String fileName) {
+        waitForElementVisible(driver, HomePageUI.FILE_LOADED_BY_FILE_NAME, fileName);
+        return isElementDisplayed(driver, HomePageUI.FILE_LOADED_BY_FILE_NAME, fileName);
+
+    }
+
+    public void clickToUploadAllButton(WebDriver driver) {
+        List<WebElement> startButtons = getListWebElement(driver, HomePageUI.UPLOAD_BUTTON);
+
+        for (WebElement button : startButtons) {
+            button.click();
+            sleepInSecond(3000);
+        }
+
     }
 }

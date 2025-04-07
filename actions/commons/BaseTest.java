@@ -1,17 +1,36 @@
 package commons;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.safari.SafariDriver;
+import org.testng.Assert;
+import org.testng.Reporter;
+import org.testng.annotations.BeforeSuite;
+
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class BaseTest {
 
-    private WebDriver driver;
+    public WebDriver getDriver() {
+        return driver;
+    }
+
+    protected WebDriver driver;
+    protected final Logger log;
+
+    public BaseTest() {
+        log = LogManager.getLogger(getClass());
+    }
 
     // Set protected chỉ cần lớp con kế thừa mới có thể GỌI
     protected WebDriver getBrowserDriver(String urlValue, String browserName) {
@@ -21,11 +40,29 @@ public class BaseTest {
             case EDGE:
                 driver = new EdgeDriver();
                 break;
+            case HEDGE:
+                EdgeOptions edgeOptions = new EdgeOptions();
+                edgeOptions.addArguments("--headless");
+                edgeOptions.addArguments("window-size=1366x768");
+                driver = new EdgeDriver(edgeOptions);
+                break;
             case FIREFOX:
                 driver = new FirefoxDriver();
                 break;
+            case HFIREFOX:
+                FirefoxOptions options = new FirefoxOptions();
+                options.addArguments("-headless");
+                options.addArguments("window-size=1920x1080");
+                driver = new FirefoxDriver(options);
+                break;
             case CHROME:
                 driver = new ChromeDriver();
+                break;
+            case HCHROME:
+                ChromeOptions chromeOptions = new ChromeOptions();
+                chromeOptions.addArguments("--headless");
+                chromeOptions.addArguments("window-size=1366x768");
+                driver = new ChromeDriver(chromeOptions);
                 break;
             case SAFARI:
                 driver = new SafariDriver();
@@ -49,6 +86,114 @@ public class BaseTest {
         if (driver != null) {
             driver.quit();
         }
+    }
+
+    // Verify
+
+    protected boolean verifyTrue(boolean condition) {
+        boolean status = true;
+        try {
+            Assert.assertTrue(condition);
+        } catch (Throwable e) {
+            status = false;
+
+            VerificationFailures.getFailures().addFailureForTest(Reporter.getCurrentTestResult(), e);
+            Reporter.getCurrentTestResult().setThrowable(e);
+        }
+        return status;
+    }
+
+    protected boolean verifyFalse(boolean condition) {
+        boolean status = true;
+        try {
+            Assert.assertFalse(condition);
+        } catch (Throwable e) {
+            status = false;
+            VerificationFailures.getFailures().addFailureForTest(Reporter.getCurrentTestResult(), e);
+            Reporter.getCurrentTestResult().setThrowable(e);
+        }
+        return status;
+    }
+
+    protected boolean verifyEquals(Object actual, Object expected) {
+        boolean status = true;
+        try {
+            Assert.assertEquals(actual, expected);
+        } catch (Throwable e) {
+            status = false;
+            VerificationFailures.getFailures().addFailureForTest(Reporter.getCurrentTestResult(), e);
+            Reporter.getCurrentTestResult().setThrowable(e);
+        }
+        return status;
+    }
+
+    public void deleteAllFileInFolder(String folderName) {
+        try {
+            String pathFolderDownload = GlobalConstants.PROJECT_PATH + File.separator + folderName;
+            File file = new File(pathFolderDownload);
+            File[] listOfFiles = file.listFiles();
+            if (listOfFiles.length != 0) {
+                for (int i = 0; i < listOfFiles.length; i++) {
+                    if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("environment.properties")) {
+                        new File(listOfFiles[i].toString()).delete();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.print(e.getMessage());
+        }
+    }
+
+    protected void closeBrowserDriver() {
+        String cmd = null;
+        try {
+            String osName = System.getProperty("os.name").toLowerCase();
+            log.info("OS name = " + osName);
+
+            String driverInstanceName = driver.toString().toLowerCase();
+            log.info("Driver instance name = " + driverInstanceName);
+
+            String browserDriverName = null;
+
+            if (driverInstanceName.contains("chrome")) {
+                browserDriverName = "chromedriver";
+            }  else if (driverInstanceName.contains("firefox")) {
+                browserDriverName = "geckodriver";
+            } else if (driverInstanceName.contains("edge")) {
+                browserDriverName = "msedgedriver";
+            } else if (driverInstanceName.contains("opera")) {
+                browserDriverName = "operadriver";
+            } else {
+                browserDriverName = "safaridriver";
+            }
+
+            if (osName.contains("window")) {
+                cmd = "taskkill /F /FI \"IMAGENAME eq " + browserDriverName + "*\"";
+            } else {
+                cmd = "pkill " + browserDriverName;
+            }
+
+            if (driver != null) {
+                driver.manage().deleteAllCookies();
+                driver.quit();
+            }
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        } finally {
+            try {
+                Process process = Runtime.getRuntime().exec(cmd);
+                process.waitFor();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @BeforeSuite
+    public void deleteReportFolder() {
+        deleteAllFileInFolder("allure-results");
     }
 
 }
