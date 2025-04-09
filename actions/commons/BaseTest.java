@@ -33,7 +33,7 @@ public class BaseTest {
     }
 
     // Set protected chỉ cần lớp con kế thừa mới có thể GỌI
-    protected WebDriver getBrowserDriver(String urlValue, String browserName) {
+    protected WebDriver getBrowserDriver(String environmentName, String browserName) {
 
         BrowserType browserType = BrowserType.valueOf(browserName.toUpperCase());
         switch (browserType) {
@@ -73,8 +73,26 @@ public class BaseTest {
 
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT));
         driver.manage().window().maximize();
-        driver.get(urlValue);
+        driver.get(getUrlByEnvironmentName(environmentName));
         return driver;
+    }
+
+    private String getUrlByEnvironmentName(String environmentName) {
+        String url;
+        switch (environmentName) {
+            case "dev" :
+                url = "http://localhost/orangehrm-5.7/web/index.php/auth/login";
+                break;
+            case "testing" :
+                url = "http://testing/orangehrm-5.7/web/index.php/auth/login";
+                break;
+            case "staging" :
+                url = "http://staging/orangehrm-5.7/web/index.php/auth/login";
+                break;
+            default:
+                throw new RuntimeException("Environment Name is not valid");
+        }
+        return url;
     }
 
     protected int generateFakeNumber() {
