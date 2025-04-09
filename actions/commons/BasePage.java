@@ -179,7 +179,7 @@ public class BasePage {
         } else {
             key = Keys.COMMAND;
         }
-
+        // Clear dữ liệu cũ = Key
         getWebElement(driver, locator).sendKeys(Keys.chord(key,"a",Keys.BACK_SPACE));
         sleepInSecond(1000);
         getWebElement(driver, locator).sendKeys(valueToSend);
